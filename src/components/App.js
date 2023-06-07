@@ -7,6 +7,29 @@ function App() {
   const [pets, setPets] = useState([]);
   const [filters, setFilters] = useState({ type: "all" });
 
+  function handleFilteringFeedback(event) {
+    setFilters({type: event.target.value})
+  }
+
+  function retrieveThePets( ) {
+    let optionalQuery = (filters.type === "all" ? "" : `?type=${filters.type}`)
+    let foo = `http://localhost:3001/pets${optionalQuery}`
+    fetch(`http://localhost:3001/pets${optionalQuery}`)
+    .then((r) => r.json())
+    .then((retrievedPets) => {
+      setPets(retrievedPets)
+    });
+  }
+
+  function markPetAdoption(petId ) {
+    pets.forEach((pet) => {
+      if (pet.id === petId) {
+        pet.isAdopted = true
+      }
+    })
+    setPets([...pets])
+  }
+
   return (
     <div className="ui container">
       <header>
@@ -15,10 +38,10 @@ function App() {
       <div className="ui container">
         <div className="ui grid">
           <div className="four wide column">
-            <Filters />
+            <Filters onChangeType= {handleFilteringFeedback} onFindPetsClick = {retrieveThePets} />
           </div>
           <div className="twelve wide column">
-            <PetBrowser />
+            <PetBrowser pets = {pets} onAdoptPet = {markPetAdoption} />
           </div>
         </div>
       </div>
